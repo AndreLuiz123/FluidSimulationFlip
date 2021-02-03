@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="MacGrid.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+<canvas></canvas>
+<script>
+
+    var canvas = document.querySelector("canvas");
+    canvas.height = 500;
+    canvas.width = 500;
+        
+    var dt = 0;
+    var anterior = 0;
+    var ctx = canvas.getContext("2d");
+
+    var mac = new MacGrid(10, 0.1);
+
+
+    function passo(t)//Main loop
+    {
+        dt = (t - anterior)/1000;
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+
+
+
+        mac.desenhar(ctx);
+
+
+        anterior = t;
+        requestAnimationFrame(passo);
+    }
+
+    
+    requestAnimationFrame(passo);
+
+
+</script>
+
+</body>
+</html>
