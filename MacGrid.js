@@ -90,12 +90,13 @@ class MacGrid{
             for(var c=0; c<4; c++)
             {
 
-                newParticleX =  this.dx*i + (Math.random()*(2 + 1) - 1)*this.dx*0.5;
-                newParticleY =  this.dx*j + (Math.random()*(2 + 1) - 1)*this.dx*0.5;
-                console.log(newParticleX+", "+newParticleY+", "+i*this.dx+", "+j*this.dx)
+                newParticleX =  this.dx*i + Math.random()*this.dx;
+                newParticleY =  this.dx*j + Math.random()*this.dx;
+                
                 
                 if(Math.sqrt((newParticleX - x)*(newParticleX - x) + (newParticleY - y)*(newParticleY - y)) <= r)
                 {
+                    console.log(newParticleX+", "+this.dx*i+", "+Number(this.dx*i + this.dx));                
                     var novaParticula = new Particle(newParticleX, newParticleY);
                     this.particulas.push(novaParticula);
                 }
