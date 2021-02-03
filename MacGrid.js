@@ -44,7 +44,7 @@ class MacGrid{
         for(var i=0; i<this.u.length; i++)
         for(var j=0; j<this.u[i].length; j++)
         {
-            ctx.fillStyle = "blue";
+            ctx.fillStyle = "pink";
             ctx.fillRect(i*this.dx-1.5,j*this.dx-1.5+this.dx/2,3,3);
         }    
 
@@ -75,7 +75,38 @@ class MacGrid{
 
         this.desenharVelocidades(ctx);
 
+        for(var i=0; i<this.particulas.length; i++)
+            this.particulas[i].desenhar(ctx);
+
     }
 
+    createParticles(x,y,r){
+        var newParticleX = 0;
+        var newParticleY = 0;
+        
+        for(var i=0; i<this.colunas; i++)
+        for(var j=0; j<this.linhas; j++)
+        {
+            for(var c=0; c<4; c++)
+            {
+
+                newParticleX =  this.dx*i + (Math.random()*(2 + 1) - 1)*this.dx*0.5;
+                newParticleY =  this.dx*j + (Math.random()*(2 + 1) - 1)*this.dx*0.5;
+                console.log(newParticleX+", "+newParticleY+", "+i*this.dx+", "+j*this.dx)
+                
+                if(Math.sqrt((newParticleX - x)*(newParticleX - x) + (newParticleY - y)*(newParticleY - y)) <= r)
+                {
+                    var novaParticula = new Particle(newParticleX, newParticleY);
+                    this.particulas.push(novaParticula);
+                }
+            }
+
+        }
+
+
+
+
+
+    }
 
 }
