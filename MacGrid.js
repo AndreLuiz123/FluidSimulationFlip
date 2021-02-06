@@ -160,5 +160,43 @@ class MacGrid{
         return 0;
     }
 
+    transferGridToParticle(){
+
+    }   
+
+    vel(x,y){
+        
+    }
+
+    interpolacaoLinear(grade,x,y){
+
+        var coluna = Math.floor(x/this.dx);
+        var linha = Math.floor(y/this.dx);
+
+        var pontox1 = coluna*this.dx;
+        var pontox2 = coluna*this.dx + this.dx;
+
+        var beta = (x - pontox1)/(pontox2 - pontox1);//Calcula a distância entre x e o ponto1 e já faz a escala de 0 a 1
+
+        return grade[coluna][linha]*beta + grade[coluna+1][linha]*(1 - beta);
+    }
+
+    interpolacaoBilinear(grade,x,y){
+
+        var coluna = Math.floor(x/this.dx);
+        var linha = Math.floor(y/this.dx);
+
+        var pontox1 = coluna*this.dx;
+        var pontox2 = coluna*this.dx + this.dx;
+
+        var pontoy1 = linha*this.dx;
+        var pontoy2 = linha*this.dx + this.dx;
+
+        var beta = Math.abs(x - pontox1)/Math.abs(pontox2 - pontox1);//Calcula a distância entre x e o pontox1 e já faz a escala de 0 a 1
+        var omega = Math.abs(y - pontoy1)/Math.abs(pontoy2 - pontoy1);//Calcula a distância entre y e o pontoy1 e já faz a escala de 0 a 1
+        
+
+        return  (grade[coluna][linha]*beta + grade[coluna+1][linha]*(1 - beta))*omega + (grade[coluna][linha+1]*beta + grade[coluna+1][linha+1]*(1 - beta))*(1 - omega);  
+    }
 
 }
