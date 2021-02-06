@@ -164,10 +164,30 @@ class MacGrid{
 
     transferGridToParticle(){
 
+        var difU = this.criarGrade(this.N+1,this.N);
+        var difV = this.criarGrade(this.N,this.N+1);
+
+        for(var i=0; i<this.N+1; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            difU[i][j] = this.u[i][j] - this.u_saved[i][j];
+        }
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N+1; j++)
+        {
+            difV[i][j] = this.v[i][j] - this.v_saved[i][j];
+        }
+
+        for(var i=0; i<this.particulas.length; i++)
+        {
+            this.particulas[i].u = this.vel(this.u,difU,this.particulas[i].x,this.particulas[i].y,this.particulas.u);
+            this.particulas[i].v = this.vel(this.v,difV,this.particulas[i].x,this.particulas[i].y,this.particulas.v);
+        }
     }   
 
-    vel(grade,gradeVelha,x,y){
-        return (this.alpha)*this.interpolacaoBilinear(grade,x,y);         
+    vel(grade,gradeDiferenca,x,y,velVelha){
+        return (this.alpha)*this.interpolacaoBilinear(grade,x,y) + (1 - this.alpha)*(velVelha + this.interpolacaoBilinear(gradeDiferenca,x,y));         
     }
 
     interpolacaoLinear(grade,x,y){
