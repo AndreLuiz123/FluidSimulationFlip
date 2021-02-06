@@ -4,8 +4,8 @@ class Particle{
         this.x = x;
         this.y = y;
 
-        this.vx = 0;
-        this.vy = 0;
+        this.u = 0;
+        this.v = 0;
     }
 
     desenhar(ctx){

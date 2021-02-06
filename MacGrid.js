@@ -95,19 +95,70 @@ class MacGrid{
                 
                 
                 if(Math.sqrt((newParticleX - x)*(newParticleX - x) + (newParticleY - y)*(newParticleY - y)) <= r)
-                {
-                    console.log(newParticleX+", "+this.dx*i+", "+Number(this.dx*i + this.dx));                
+                {           
                     var novaParticula = new Particle(newParticleX, newParticleY);
                     this.particulas.push(novaParticula);
                 }
             }
 
         }
+    }
 
 
+    transferParticleToGrid(){
 
+        var numeradorU = this.criarGrade(this.N+1, this.N);
+        var denominadorU = this.criarGrade(this.N+1, this.N);
+        var numeradorV = this.criarGrade(this.N, this.N+1);
+        var denominadorV = this.criarGrade(this.N, this.N+1);
 
+        var weight = 0;
+
+        for(var i=0; i<this.particulas.length; i++)
+        {
+            for(var j=0; j<2;j++)
+            {
+                weight = this.K(this.particulas[i].x - j*this.dx + this.dx/2, this.particulas[i].y - j*this.dx);
+                numeradorU[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight*this.particulas[i].u;
+                denominadorU[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight;
+            }
+
+            for(var j=0; j<2;j++)
+            {
+                weight = this.K(this.particulas[i].x - j*this.dx, this.particulas[i].y - j*this.dx + this.dx/2);
+                numeradorV[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight*this.particulas[i].v;
+                denominadorV[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight;
+            }
+        }
+
+        for(var i=0; i<this.N+1; i++)
+        for(var j=0; j<this.N+1; j++)
+        {
+            if (j < this.N) {
+                if (denominadorU[i][j] != 0.0) {
+                    this.u[i][j] = numeradorU[i][j] / denominadorU[i][j];
+                }
+            }
+            if (i < this.N) {
+                if (denominadorV[i][j] != 0.0) {
+                    this.v[i][j] = numeradorV[i][j] / denominadorV[i][j];
+                }
+            }
+        }
 
     }
+
+    K(distX, distY){
+        return this.H(distX/this.dx)*this.H(distY/this.dx);
+    }
+
+    H(r){
+        if(r>0 && r<=1)
+            return 1-r;
+        if(r>=-1 && r<0)
+            return 1+r;
+        return 0;
+    }
+
 
 }
