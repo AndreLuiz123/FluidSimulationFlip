@@ -23,6 +23,8 @@ class MacGrid{
 
         this.particulas = [];
 
+        this.alpha = 1;
+
     }
 
 
@@ -164,8 +166,8 @@ class MacGrid{
 
     }   
 
-    vel(x,y){
-        
+    vel(grade,gradeVelha,x,y){
+        return (this.alpha)*this.interpolacaoBilinear(grade,x,y);         
     }
 
     interpolacaoLinear(grade,x,y){
