@@ -254,7 +254,7 @@ class MacGrid{
             this.phi[i][j] = this.updatePhi(i,j,i-1,j-1)
         }
 
-        /*//Left to Right; Top to Bottom
+        //Left to Right; Top to Bottom
         for(var i=1; i<this.N; i++)
         for(var j=this.N-2; j>=0; j--)
         {
@@ -273,7 +273,7 @@ class MacGrid{
         for(var j=this.N-2; j>=0; j--)
         {
             this.phi[i][j] = this.updatePhi(i,j,i+1,j+1)
-        }*/
+        }
     }
 
     updatePhi(i1,j1,i2,j2){
@@ -281,13 +281,14 @@ class MacGrid{
         var b =  -1*(this.phi[i2][j1] + this.phi[i1][j2]); 
         var c =  (this.phi[i2][j1]*this.phi[i2][j1] + this.phi[i1][j2]*this.phi[i1][j2] - this.dx*this.dx)*0.5;
 
-        console.log(b+" "+c);
         var newPhi = this.equacaoSegundoGrau(1, b, c);
 
-        if(this.phi[i1][j1] < newPhi || isNaN(newPhi))
-            return this.phi[i1][j1];
+        if(!isNaN(newPhi) && newPhi < this.phi[i1][j1])
+        {
+            return newPhi;
+        }
 
-        return newPhi;
+        return this.phi[i1][j1];
     }
 
     equacaoSegundoGrau(a,b,c){
