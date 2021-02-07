@@ -51,8 +51,10 @@
 
     document.addEventListener ('keypress', (event) => {
         mac.transferParticleToGrid();
+        mac.atualizaGradesAuxiliares();
         mac.applyExternalForces();
         mac.transferGridToParticle();
+        //mac.advection();
     });
     
     requestAnimationFrame(passo);

@@ -252,6 +252,22 @@ class MacGrid{
         return  (grade[coluna][linha]*beta + grade[coluna+1][linha]*(1 - beta))*omega + (grade[coluna][linha+1]*beta + grade[coluna+1][linha+1]*(1 - beta))*(1 - omega);  
     }
 
+    atualizaGradesAuxiliares(){
+
+        for(var i=0; i<this.N+1; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            this.u_saved[i][j] = this.u[i][j];
+        }
+        
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N+1; j++)
+        {
+            this.v_saved[i][j] = this.v[i][j];
+        }
+
+
+    }
 
 
 }
