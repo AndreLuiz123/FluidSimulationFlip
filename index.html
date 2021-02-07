@@ -20,10 +20,15 @@
     var anterior = 0;
     var ctx = canvas.getContext("2d");
 
-    var mac = new MacGrid(10, 0.1);
+    var mac = new MacGrid(10, 1);
 
 
     mac.createParticles(250,250,100);
+
+        mac.transferParticleToGrid();
+        mac.applyExternalForces();
+        mac.transferGridToParticle();
+        //mac.advection();
 
     function passo(t)//Main loop
     {
@@ -32,11 +37,11 @@
         ctx.fillStyle = "black";
         ctx.fillRect(0,0,canvas.width, canvas.height);
 
-
+        mac.transferParticleToGrid();
+        mac.applyExternalForces();
+        mac.transferGridToParticle();
 
         mac.desenhar(ctx);
-        mac.transferParticleToGrid();
-        mac.transferGridToParticle();
 
 
         anterior = t;

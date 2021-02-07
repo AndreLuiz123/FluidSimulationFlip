@@ -23,7 +23,9 @@ class MacGrid{
 
         this.particulas = [];
 
-        this.alpha = 1;
+        this.alpha = 0;
+
+        this.gravityValue = 10;
 
     }
 
@@ -47,6 +49,8 @@ class MacGrid{
         for(var j=0; j<this.u[i].length; j++)
         {
             ctx.fillStyle = "pink";
+            ctx.fillText(this.u[i][j],i*this.dx-1.5,j*this.dx-1.5+this.dx/2);
+            ctx.fillStyle = "pink";
             ctx.fillRect(i*this.dx-1.5,j*this.dx-1.5+this.dx/2,3,3);
         }    
 
@@ -54,11 +58,11 @@ class MacGrid{
         for(var j=0; j<this.v[i].length; j++)
         {
             ctx.fillStyle = "green";
+            ctx.fillText(this.v[i][j],i*this.dx-1.5+this.dx/2,j*this.dx-1.5);
+            ctx.fillStyle = "green";
             ctx.fillRect(i*this.dx-1.5+this.dx/2,j*this.dx-1.5,3,3);
         }    
-
     }
-
 
     desenhar(ctx){
 
@@ -79,6 +83,20 @@ class MacGrid{
 
         for(var i=0; i<this.particulas.length; i++)
             this.particulas[i].desenhar(ctx);
+
+    }
+
+    applyExternalForces(){
+
+        for(var i=0; i<this.N+1; i++)
+        for(var j=0; j<this.N+1; j++)
+        {
+            
+            if(i<this.N)
+            {
+                this.v[i][j] += this.dt*this.gravityValue;
+            }
+        }
 
     }
 
@@ -120,14 +138,14 @@ class MacGrid{
         {
             for(var j=0; j<2;j++)
             {
-                weight = this.K(this.particulas[i].x - j*this.dx + this.dx/2, this.particulas[i].y - j*this.dx);
+                weight = this.K(this.particulas[i].x - (Math.floor(this.particulas[i].x/this.dx)+j)*this.dx + this.dx/2, this.particulas[i].y - Math.floor(this.particulas[i].y/this.dx)*this.dx);
                 numeradorU[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight*this.particulas[i].u;
                 denominadorU[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight;
             }
 
             for(var j=0; j<2;j++)
             {
-                weight = this.K(this.particulas[i].x - j*this.dx, this.particulas[i].y - j*this.dx + this.dx/2);
+                weight = this.K(this.particulas[i].x - Math.floor(this.particulas[i].x/this.dx)*this.dx, this.particulas[i].y - Math.floor(this.particulas[i].y/this.dx+j)*this.dx + this.dx/2);
                 numeradorV[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight*this.particulas[i].v;
                 denominadorV[Math.floor(this.particulas[i].x/this.dx)+j][Math.floor(this.particulas[i].y/this.dx)] += weight;
             }
@@ -138,19 +156,60 @@ class MacGrid{
         {
             if (j < this.N) {
                 if (denominadorU[i][j] != 0.0) {
-                    this.u[i][j] = numeradorU[i][j] / denominadorU[i][j];
+                    
+                    this.u[i][j] = 4;//numeradorU[i][j] / denominadorU[i][j];
                 }
             }
             if (i < this.N) {
                 if (denominadorV[i][j] != 0.0) {
-                    this.v[i][j] = numeradorV[i][j] / denominadorV[i][j];
+                    this.v[i][j] = 4;//numeradorV[i][j] / denominadorV[i][j];
                 }
             }
         }
 
     }
 
+    transferGridToParticle(){
+        
+        var difU = this.criarGrade(this.N+1,this.N);
+        var difV = this.criarGrade(this.N,this.N+1);
+        
+        for(var i=0; i<this.N+1; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            difU[i][j] = this.u[i][j] - this.u_saved[i][j];
+        }
+        
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N+1; j++)
+        {
+            difV[i][j] = this.v[i][j] - this.v_saved[i][j];
+        }
+        
+        for(var i=0; i<this.particulas.length; i++)
+        {
+            this.particulas[i].u = this.vel(this.u,difU,this.particulas[i].x,this.particulas[i].y,this.particulas.u);
+            this.particulas[i].v = this.vel(this.v,difV,this.particulas[i].x,this.particulas[i].y,this.particulas.v);
+        }
+    }   
+    
+    
+    advection(){
+        
+        for(var i=0; i<this.particulas.length; i++)
+        {
+            this.particulas[i].x += this.particulas[i].u*this.dt;
+            this.particulas[i].y += this.particulas[i].v*this.dt;
+        }
+        
+    }
+    
+    vel(grade,gradeDiferenca,x,y,velVelha){
+        return (this.alpha)*this.interpolacaoBilinear(grade,x,y) + (1 - this.alpha)*(velVelha + this.interpolacaoBilinear(gradeDiferenca,x,y));         
+    }
+    
     K(distX, distY){
+       
         return this.H(distX/this.dx)*this.H(distY/this.dx);
     }
 
@@ -162,52 +221,24 @@ class MacGrid{
         return 0;
     }
 
-    transferGridToParticle(){
-
-        var difU = this.criarGrade(this.N+1,this.N);
-        var difV = this.criarGrade(this.N,this.N+1);
-
-        for(var i=0; i<this.N+1; i++)
-        for(var j=0; j<this.N; j++)
-        {
-            difU[i][j] = this.u[i][j] - this.u_saved[i][j];
-        }
-
-        for(var i=0; i<this.N; i++)
-        for(var j=0; j<this.N+1; j++)
-        {
-            difV[i][j] = this.v[i][j] - this.v_saved[i][j];
-        }
-
-        for(var i=0; i<this.particulas.length; i++)
-        {
-            this.particulas[i].u = this.vel(this.u,difU,this.particulas[i].x,this.particulas[i].y,this.particulas.u);
-            this.particulas[i].v = this.vel(this.v,difV,this.particulas[i].x,this.particulas[i].y,this.particulas.v);
-        }
-    }   
-
-    vel(grade,gradeDiferenca,x,y,velVelha){
-        return (this.alpha)*this.interpolacaoBilinear(grade,x,y) + (1 - this.alpha)*(velVelha + this.interpolacaoBilinear(gradeDiferenca,x,y));         
-    }
-
     interpolacaoLinear(grade,x,y){
-
+        
         var coluna = Math.floor(x/this.dx);
         var linha = Math.floor(y/this.dx);
-
+        
         var pontox1 = coluna*this.dx;
         var pontox2 = coluna*this.dx + this.dx;
-
+        
         var beta = (x - pontox1)/(pontox2 - pontox1);//Calcula a distância entre x e o ponto1 e já faz a escala de 0 a 1
-
+        
         return grade[coluna][linha]*beta + grade[coluna+1][linha]*(1 - beta);
     }
-
+    
     interpolacaoBilinear(grade,x,y){
-
+        
         var coluna = Math.floor(x/this.dx);
         var linha = Math.floor(y/this.dx);
-
+        
         var pontox1 = coluna*this.dx;
         var pontox2 = coluna*this.dx + this.dx;
 
@@ -220,5 +251,7 @@ class MacGrid{
 
         return  (grade[coluna][linha]*beta + grade[coluna+1][linha]*(1 - beta))*omega + (grade[coluna][linha+1]*beta + grade[coluna+1][linha+1]*(1 - beta))*(1 - omega);  
     }
+
+
 
 }
