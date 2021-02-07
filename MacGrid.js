@@ -66,8 +66,8 @@ class MacGrid{
         for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
-            ctx.fillStyle = "green";
-            ctx.fillText(this.celulas[i][j],i*this.dx+this.dx/2,j*this.dx+this.dx/2);
+            ctx.fillStyle = "yellow";
+            ctx.fillText(this.phi[i][j],i*this.dx+this.dx/2,j*this.dx+this.dx/2);
         }
     }
 
@@ -225,7 +225,61 @@ class MacGrid{
         }
 
     }
-    
+
+    initializeLevelSet(){
+
+        var inside = -0.5*this.dx;
+        var outside = 1000*this.dx;
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            if(this.celulas[i][j]===1)
+            {
+                this.phi[i][j] = inside;
+            }else{
+                this.phi[i][j] = outside;
+            }    
+        }
+    }
+
+    reinitializeLevelSet(){
+
+        
+    }
+
+    updatePhi(i1,j1,i2,j2){
+
+        var b =  this.phi[i2][j1] + this.phi[i1][j2]; 
+        var c =  (this.phi[i2][j1]*this.phi[i2][j1] + this.phi[i1][j2]*this.phi[i1][j2] - this.dx*this.dx)*0.5;
+
+        var newPhi = this.equacaoSegundoGrau(1, b, c);
+
+        if(this.phi[i][j] < newPhi || isNaN(newPhi))
+            return this.phi[i][j];
+
+        return newPhi;
+    }
+
+    equacaoSegundoGrau(a,b,c){
+
+        var retorno = {x1:0, x2:0};
+        var delta = b*b +4*a*c;
+        
+        if(delta>=0)
+        {
+            retorno.x1 = (-b + Math.sqrt(delta))/2*a;
+            retorno.x2 = (-b - Math.sqrt(delta))/2*a;
+            
+            if(retorno.x1<retorno.x2)
+            return retorno.x1;
+            else
+            return retorno.x2;
+        }
+
+        return 0/0;
+    }
+
     vel(grade,gradeDiferenca,x,y,velVelha){
         return (this.alpha)*this.interpolacaoBilinear(grade,x,y) + (1 - this.alpha)*(velVelha + this.interpolacaoBilinear(gradeDiferenca,x,y));         
     }
