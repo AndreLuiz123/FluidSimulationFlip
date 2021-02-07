@@ -63,12 +63,14 @@ class MacGrid{
             ctx.fillRect(i*this.dx-1.5+this.dx/2,j*this.dx-1.5,3,3);
         }    
 
-        for(var i=0; i<this.N; i++)
+        ctx.fillStyle = "yellow";
+        ctx.fillText(Math.floor(this.phi[0][0]),0*this.dx+this.dx/2 - this.dx/4,0*this.dx+this.dx/2);
+        /*for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
             ctx.fillStyle = "yellow";
-            ctx.fillText(this.phi[i][j],i*this.dx+this.dx/2,j*this.dx+this.dx/2);
-        }
+            ctx.fillText(Math.floor(this.phi[i][j]),i*this.dx+this.dx/2 - this.dx/4,j*this.dx+this.dx/2);
+        }*/
     }
 
     desenhar(ctx){
@@ -244,19 +246,44 @@ class MacGrid{
     }
 
     reinitializeLevelSet(){
+        //Left to Right; Bottom to Top
+        for(var i=1; i<this.N; i++)
+        for(var j=1; j<this.N; j++)
+        {
+            this.phi[i][j] = this.updatePhi(i,j,i-1,j-1)
+        }
 
-        
+        //Left to Right; Top to Bottom
+        for(var i=1; i<this.N; i++)
+        for(var j=this.N-2; j>=0; j--)
+        {
+            this.phi[i][j] = this.updatePhi(i,j,i-1,j+1)
+        }
+
+        //Right to Left; Bottom to Top
+        for(var i=this.N-2; i>=0; i--)
+        for(var j=1; j<this.N; j++)
+        {
+            this.phi[i][j] = this.updatePhi(i,j,i+1,j-1)
+        }
+
+        //Right to Left; Top do Bottom
+        for(var i=this.N-2; i>=0; i--)
+        for(var j=this.N-2; j>=0; j--)
+        {
+            this.phi[i][j] = this.updatePhi(i,j,i+1,j+1)
+        }
     }
 
     updatePhi(i1,j1,i2,j2){
 
-        var b =  this.phi[i2][j1] + this.phi[i1][j2]; 
+        var b =  -1*(this.phi[i2][j1] + this.phi[i1][j2]); 
         var c =  (this.phi[i2][j1]*this.phi[i2][j1] + this.phi[i1][j2]*this.phi[i1][j2] - this.dx*this.dx)*0.5;
 
         var newPhi = this.equacaoSegundoGrau(1, b, c);
 
-        if(this.phi[i][j] < newPhi || isNaN(newPhi))
-            return this.phi[i][j];
+        if(this.phi[i1][j1] < newPhi || isNaN(newPhi))
+            return this.phi[i1][j1];
 
         return newPhi;
     }

@@ -55,6 +55,7 @@
         mac.applyExternalForces();
         mac.markCellsFluid();
         mac.initializeLevelSet();
+        mac.reinitializeLevelSet();
         mac.transferGridToParticle();
         //mac.advection();
     });
