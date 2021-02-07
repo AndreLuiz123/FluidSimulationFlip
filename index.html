@@ -25,9 +25,9 @@
 
     mac.createParticles(250,250,100);
 
-        mac.transferParticleToGrid();
+        /*mac.transferParticleToGrid();
         mac.applyExternalForces();
-        mac.transferGridToParticle();
+        mac.transferGridToParticle();*/
         //mac.advection();
 
     function passo(t)//Main loop
@@ -37,9 +37,9 @@
         ctx.fillStyle = "black";
         ctx.fillRect(0,0,canvas.width, canvas.height);
 
-        mac.transferParticleToGrid();
+        /*mac.transferParticleToGrid();
         mac.applyExternalForces();
-        mac.transferGridToParticle();
+        mac.transferGridToParticle();*/
 
         mac.desenhar(ctx);
 
@@ -48,6 +48,12 @@
         requestAnimationFrame(passo);
     }
 
+
+    document.addEventListener ('keypress', (event) => {
+        mac.transferParticleToGrid();
+        mac.applyExternalForces();
+        mac.transferGridToParticle();
+    });
     
     requestAnimationFrame(passo);
 

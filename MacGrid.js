@@ -157,12 +157,12 @@ class MacGrid{
             if (j < this.N) {
                 if (denominadorU[i][j] != 0.0) {
                     
-                    this.u[i][j] = 4;//numeradorU[i][j] / denominadorU[i][j];
+                    this.u[i][j] = numeradorU[i][j] / denominadorU[i][j];
                 }
             }
             if (i < this.N) {
                 if (denominadorV[i][j] != 0.0) {
-                    this.v[i][j] = 4;//numeradorV[i][j] / denominadorV[i][j];
+                    this.v[i][j] = numeradorV[i][j] / denominadorV[i][j];
                 }
             }
         }
@@ -188,8 +188,8 @@ class MacGrid{
         
         for(var i=0; i<this.particulas.length; i++)
         {
-            this.particulas[i].u = this.vel(this.u,difU,this.particulas[i].x,this.particulas[i].y,this.particulas.u);
-            this.particulas[i].v = this.vel(this.v,difV,this.particulas[i].x,this.particulas[i].y,this.particulas.v);
+            this.particulas[i].u = this.vel(this.u,difU,this.particulas[i].x,this.particulas[i].y,this.particulas[i].u);
+            this.particulas[i].v = this.vel(this.v,difV,this.particulas[i].x,this.particulas[i].y,this.particulas[i].v);
         }
     }   
     
