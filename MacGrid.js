@@ -9,7 +9,7 @@ class MacGrid{
         this.dt = dt;
         this.dx = 500/N;
 
-        this.celulas = [];
+        this.celulas = this.criarGrade(N, N);
 
         this.u = this.criarGrade(N+1, N);
         this.v = this.criarGrade(N, N+1);
@@ -23,7 +23,7 @@ class MacGrid{
 
         this.particulas = [];
 
-        this.alpha = 0;
+        this.alpha = 0.5;
 
         this.gravityValue = 10;
 
@@ -48,8 +48,8 @@ class MacGrid{
         for(var i=0; i<this.u.length; i++)
         for(var j=0; j<this.u[i].length; j++)
         {
-            ctx.fillStyle = "pink";
-            ctx.fillText(this.u[i][j],i*this.dx-1.5,j*this.dx-1.5+this.dx/2);
+            //ctx.fillStyle = "pink";
+            //ctx.fillText(this.u[i][j],i*this.dx-1.5,j*this.dx-1.5+this.dx/2);
             ctx.fillStyle = "pink";
             ctx.fillRect(i*this.dx-1.5,j*this.dx-1.5+this.dx/2,3,3);
         }    
@@ -57,11 +57,18 @@ class MacGrid{
         for(var i=0; i<this.v.length; i++)
         for(var j=0; j<this.v[i].length; j++)
         {
-            ctx.fillStyle = "green";
-            ctx.fillText(this.v[i][j],i*this.dx-1.5+this.dx/2,j*this.dx-1.5);
+            //ctx.fillStyle = "green";
+            //ctx.fillText(this.v[i][j],i*this.dx-1.5+this.dx/2,j*this.dx-1.5);
             ctx.fillStyle = "green";
             ctx.fillRect(i*this.dx-1.5+this.dx/2,j*this.dx-1.5,3,3);
         }    
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            ctx.fillStyle = "green";
+            ctx.fillText(this.celulas[i][j],i*this.dx+this.dx/2,j*this.dx+this.dx/2);
+        }
     }
 
     desenhar(ctx){
@@ -202,6 +209,21 @@ class MacGrid{
             this.particulas[i].y += this.particulas[i].v*this.dt;
         }
         
+    }
+
+    markCellsFluid(){
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            this.celulas[i][j] = 0;
+        }
+
+        for(var i=0; i<this.particulas.length; i++)
+        {
+            this.celulas[Math.floor(this.particulas[i].x/this.dx)][Math.floor(this.particulas[i].y/this.dx)] = 1;
+        }
+
     }
     
     vel(grade,gradeDiferenca,x,y,velVelha){
