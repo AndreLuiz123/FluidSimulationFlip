@@ -30,14 +30,14 @@ class MacGrid{
     }
 
 
-    criarGrade(colunas, linhas){
+    criarGrade(colunas, linhas, obj=0){
 
         var novaGrade = [];
 
         for(var i=0 ; i<colunas; i++){
             novaGrade[i] = [];
             for(var j=0; j<linhas; j++){
-                novaGrade[i][j] = 0;
+                novaGrade[i][j] = obj;
             }
         }
 
@@ -323,6 +323,106 @@ class MacGrid{
                         (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j+1]);  
         }
         */
+    }
+
+    projection(){
+
+        var A = this.criarGrade(this.N, this.N, {center:0, left:0, right:0, top:0, bottom:0, type:'A'});
+        var b = this.criarGrade(this.N, this.N, {valor:0, type:'A'});
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+
+            if(i==0 || i==this.N-1 || j==0 || j==this.N-1)
+            {
+                A[i][j].type = 'S';
+                b[i][j].type = 'S';                
+            }else if(this.celulas[i][j]==1)
+            {
+                A[i][j].type = 'F';
+                b[i][j].type = 'F';
+            }
+        }
+
+        A = this.buildMatrixA(A);
+        //b = this.buildRightSide(b);
+
+        for(var i=1; i<this.N-1; i++)
+        for(var j=1; j<this.N-1; j++)
+        {
+            this.p = ((this.A[i][j].left*this.p[i-1][j] + this.A[i][j].right*this.p[i+1][j] + this.A[i][j].top*this.p[i][j+1] + this.A[i][j].bottom*this.p[i][j-1]
+                     )/this.A[i][j].center) + this.b[i][j];
+        }
+
+
+    }
+
+    buildRightSide(gradeVazia){
+        var escala = this.dx/this.dt;
+
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            if(gradeVazia[i-1][j].type != 'S')
+            {
+                gradeVazia[i][j].valor += this.u[i][j];
+            }
+            if(gradeVazia[i+1][j].type != 'S')
+            {
+                gradeVazia[i][j].valor += this.u[i+1][j];
+            }
+            if(gradeVazia[i][j-1].type != 'S')
+            {
+                gradeVazia[i][j].valor += this.v[i][j];
+            }
+            if(gradeVazia[i][j+1].type != 'S')
+            {
+                gradeVazia[i][j].valor += this.v[i][j+1];
+            }
+            gradeVazia[i][j].valor*=escala;
+        }
+
+        return gradeVazia;
+    }
+
+    buildMatrixA(A){
+
+        var temp = 4;
+        for(var i=0; i<this.N; i++)
+        for(var j=0; j<this.N; j++)
+        {
+            if(A[i][j].type == 'F')
+            {
+                temp = 4;
+                if(i<this.N)
+                if(A[i+1][j].type == 'S')
+                    temp--;
+                else if(A[i+1][j].type == 'F')
+                    A[i][j].right = -1;
+
+                if(i>0)
+                if(A[i-1][j].type == 'S')
+                    temp--;
+                else if(A[i-1][j].type == 'F')
+                    A[i][j].left = -1;
+
+                if(j<this.N)
+                if(A[i][j+1].type == 'S')
+                    temp--;
+                else if(A[i][j+1].type == 'F')
+                    A[i][j].top = -1;
+
+                if(j>0)
+                if(A[i][j-1].type == 'S')
+                    temp--;
+                else if(A[i][j-1].type == 'F')
+                    A[i][j].top = -1;
+
+                A[i][j].center = temp;
+            }
+        }
+        return A;
     }
 
     updatePhi(i1,j1,i2,j2){

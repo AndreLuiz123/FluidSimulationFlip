@@ -57,6 +57,7 @@
         mac.initializeLevelSet();
         mac.reinitializeLevelSet();
         mac.extrapolateVelocities();
+        mac.projection();
         mac.transferGridToParticle();
         mac.advection();
     });
