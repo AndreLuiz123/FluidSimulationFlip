@@ -48,8 +48,8 @@ class MacGrid{
         for(var i=0; i<this.u.length; i++)
         for(var j=0; j<this.u[i].length; j++)
         {
-            //ctx.fillStyle = "pink";
-            //ctx.fillText(this.u[i][j],i*this.dx-1.5,j*this.dx-1.5+this.dx/2);
+            ctx.fillStyle = "pink";
+            ctx.fillText(Math.floor(this.u[i][j]),i*this.dx-1.5,j*this.dx-1.5+this.dx/2);
             ctx.fillStyle = "pink";
             ctx.fillRect(i*this.dx-1.5,j*this.dx-1.5+this.dx/2,3,3);
         }    
@@ -57,8 +57,8 @@ class MacGrid{
         for(var i=0; i<this.v.length; i++)
         for(var j=0; j<this.v[i].length; j++)
         {
-            //ctx.fillStyle = "green";
-            //ctx.fillText(this.v[i][j],i*this.dx-1.5+this.dx/2,j*this.dx-1.5);
+            ctx.fillStyle = "green";
+            ctx.fillText(Math.floor(this.v[i][j]),i*this.dx-1.5+this.dx/2,j*this.dx-1.5);
             ctx.fillStyle = "green";
             ctx.fillRect(i*this.dx-1.5+this.dx/2,j*this.dx-1.5,3,3);
         }    
@@ -66,12 +66,12 @@ class MacGrid{
         /*ctx.fillStyle = "yellow";
         ctx.fillText(Math.floor(this.phi[5][5]),5*this.dx+this.dx/2 - this.dx/4,5*this.dx+this.dx/2);
         */
-        for(var i=0; i<this.N; i++)
+        /*for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
             ctx.fillStyle = "yellow";
             ctx.fillText(Math.floor(this.phi[i][j]),i*this.dx+this.dx/2 - this.dx/4,j*this.dx+this.dx/2);
-        }
+        }*/
     }
 
     desenhar(ctx){
@@ -277,38 +277,52 @@ class MacGrid{
     }
 
     extrapolateVelocities(){
-
+        /*
         //Left to Right; Bottom to Top
         for(var i=1; i<this.N; i++)
         for(var j=1; j<this.N; j++)
-        {
-            this.u[i][j] = -1*((this.u[i-1][j]*(-this.phi[i][j] + this.phi[i-1][j])) + (this.u[i][j-1]*(-this.phi[i][j] + this.phi[i][j-1])))/
-            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j-1]);
+        {       
+            this.u[i][j]= -this.u[i-1][j]*(-this.phi[i][j]+this.phi[i-1][j]) - this.u[i][j-1]*(-this.phi[i][j]+this.phi[i][j-1])/
+                            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j-1]);
+
+            this.u[i+1][j]= -this.u[i-1+1][j]*(-this.phi[i][j]+this.phi[i-1][j]) - this.u[i+1][j-1]*(-this.phi[i][j]+this.phi[i][j-1])/
+                        (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j-1]);
         }
 
         //Left to Right; Top to Bottom
         for(var i=1; i<this.N; i++)
         for(var j=this.N-2; j>=0; j--)
         {
-            this.u[i][j] = -1*((this.u[i-1][j]*(-this.phi[i][j] + this.phi[i-1][j])) + (this.u[i][j+1]*(-this.phi[i][j] + this.phi[i][j+1])))/
-            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j+1]);
+
+            this.u[i][j]= -this.u[i-1][j]*(-this.phi[i][j]+this.phi[i-1][j]) - this.u[i][j+1]*(-this.phi[i][j]+this.phi[i][j+1])/
+                            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j+1]);
+
+            this.u[i+1][j]= -this.u[i-1+1][j]*(-this.phi[i][j]+this.phi[i-1][j]) - this.u[i+1][j+1]*(-this.phi[i][j]+this.phi[i][j+1])/
+                        (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j+1]);
         }
 
         //Right to Left; Bottom to Top
         for(var i=this.N-2; i>=0; i--)
         for(var j=1; j<this.N; j++)
         {
-            this.u[i][j] = -1*((this.u[i+1][j]*(-this.phi[i][j] + this.phi[i+1][j])) + (this.u[i][j-1]*(-this.phi[i][j] + this.phi[i][j-1])))/
-            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j-1]);
+            this.u[i][j]= -this.u[i+1][j]*(-this.phi[i][j]+this.phi[i+1][j]) - this.u[i][j-1]*(-this.phi[i][j]+this.phi[i][j-1])/
+                            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j-1]);
+
+            this.u[i+1][j]= -this.u[i+1-1][j]*(-this.phi[i][j]+this.phi[i+1][j]) - this.u[i+1][j-1]*(-this.phi[i][j]+this.phi[i][j-1])/
+                        (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j-1]);            
         }
 
         //Right to Left; Top do Bottom
         for(var i=this.N-2; i>=0; i--)
         for(var j=this.N-2; j>=0; j--)
         {
-            this.u[i][j] = -1*((this.u[i+1][j]*(-this.phi[i][j] + this.phi[i+1][j])) + (this.u[i][j+1]*(-this.phi[i][j] + this.phi[i][j+1])))/
-            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j+1]);
+            this.u[i][j]= -this.u[i+1][j]*(-this.phi[i][j]+this.phi[i+1][j]) - this.u[i][j+1]*(-this.phi[i][j]+this.phi[i][j+1])/
+                            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j+1]);
+
+            this.u[i+1][j]= -this.u[i+1-1][j]*(-this.phi[i][j]+this.phi[i+1][j]) - this.u[i+1][j+1]*(-this.phi[i][j]+this.phi[i][j+1])/
+                        (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j+1]);  
         }
+        */
     }
 
     updatePhi(i1,j1,i2,j2){
