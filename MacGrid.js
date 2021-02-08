@@ -346,13 +346,13 @@ class MacGrid{
         }
 
         A = this.buildMatrixA(A);
-        //b = this.buildRightSide(b);
+        b = this.buildRightSide(b);
 
         for(var i=1; i<this.N-1; i++)
         for(var j=1; j<this.N-1; j++)
         {
-            this.p = ((this.A[i][j].left*this.p[i-1][j] + this.A[i][j].right*this.p[i+1][j] + this.A[i][j].top*this.p[i][j+1] + this.A[i][j].bottom*this.p[i][j-1]
-                     )/this.A[i][j].center) + this.b[i][j];
+            this.p = ((A[i][j].left*this.p[i-1][j] + A[i][j].right*this.p[i+1][j] + A[i][j].top*this.p[i][j+1] + A[i][j].bottom*this.p[i][j-1]
+                     )/A[i][j].center) + b[i][j];
         }
 
 
@@ -364,18 +364,25 @@ class MacGrid{
         for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
+            if(i>0)
             if(gradeVazia[i-1][j].type != 'S')
             {
                 gradeVazia[i][j].valor += this.u[i][j];
             }
+            
+            if(i<this.N-1)
             if(gradeVazia[i+1][j].type != 'S')
             {
                 gradeVazia[i][j].valor += this.u[i+1][j];
             }
+            
+            if(j>0)
             if(gradeVazia[i][j-1].type != 'S')
             {
                 gradeVazia[i][j].valor += this.v[i][j];
             }
+
+            if(j<this.N-1)
             if(gradeVazia[i][j+1].type != 'S')
             {
                 gradeVazia[i][j].valor += this.v[i][j+1];
