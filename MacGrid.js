@@ -251,28 +251,63 @@ class MacGrid{
         for(var i=1; i<this.N; i++)
         for(var j=1; j<this.N; j++)
         {
-            this.phi[i][j] = this.updatePhi(i,j,i-1,j-1)
+            this.phi[i][j] = this.updatePhi(i,j,i-1,j-1);
         }
 
         //Left to Right; Top to Bottom
         for(var i=1; i<this.N; i++)
         for(var j=this.N-2; j>=0; j--)
         {
-            this.phi[i][j] = this.updatePhi(i,j,i-1,j+1)
+            this.phi[i][j] = this.updatePhi(i,j,i-1,j+1);
         }
         
         //Right to Left; Bottom to Top
         for(var i=this.N-2; i>=0; i--)
         for(var j=1; j<this.N; j++)
         {
-            this.phi[i][j] = this.updatePhi(i,j,i+1,j-1)
+            this.phi[i][j] = this.updatePhi(i,j,i+1,j-1);
         }
         
         //Right to Left; Top do Bottom
         for(var i=this.N-2; i>=0; i--)
         for(var j=this.N-2; j>=0; j--)
         {
-            this.phi[i][j] = this.updatePhi(i,j,i+1,j+1)
+            this.phi[i][j] = this.updatePhi(i,j,i+1,j+1);
+        }
+    }
+
+    extrapolateVelocities(){
+
+        //Left to Right; Bottom to Top
+        for(var i=1; i<this.N; i++)
+        for(var j=1; j<this.N; j++)
+        {
+            this.u[i][j] = -1*((this.u[i-1][j]*(-this.phi[i][j] + this.phi[i-1][j])) + (this.u[i][j-1]*(-this.phi[i][j] + this.phi[i][j-1])))/
+            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j-1]);
+        }
+
+        //Left to Right; Top to Bottom
+        for(var i=1; i<this.N; i++)
+        for(var j=this.N-2; j>=0; j--)
+        {
+            this.u[i][j] = -1*((this.u[i-1][j]*(-this.phi[i][j] + this.phi[i-1][j])) + (this.u[i][j+1]*(-this.phi[i][j] + this.phi[i][j+1])))/
+            (2*this.phi[i][j] - this.phi[i-1][j] - this.phi[i][j+1]);
+        }
+
+        //Right to Left; Bottom to Top
+        for(var i=this.N-2; i>=0; i--)
+        for(var j=1; j<this.N; j++)
+        {
+            this.u[i][j] = -1*((this.u[i+1][j]*(-this.phi[i][j] + this.phi[i+1][j])) + (this.u[i][j-1]*(-this.phi[i][j] + this.phi[i][j-1])))/
+            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j-1]);
+        }
+
+        //Right to Left; Top do Bottom
+        for(var i=this.N-2; i>=0; i--)
+        for(var j=this.N-2; j>=0; j--)
+        {
+            this.u[i][j] = -1*((this.u[i+1][j]*(-this.phi[i][j] + this.phi[i+1][j])) + (this.u[i][j+1]*(-this.phi[i][j] + this.phi[i][j+1])))/
+            (2*this.phi[i][j] - this.phi[i+1][j] - this.phi[i][j+1]);
         }
     }
 
