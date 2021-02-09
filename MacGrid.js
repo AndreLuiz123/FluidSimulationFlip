@@ -37,7 +37,37 @@ class MacGrid{
         for(var i=0 ; i<colunas; i++){
             novaGrade[i] = [];
             for(var j=0; j<linhas; j++){
-                novaGrade[i][j] = obj;
+                novaGrade[i].push(obj);
+            }
+        }
+
+        return novaGrade;
+    }
+
+    criarMatrizA(colunas, linhas){
+
+        var novaGrade = [];
+
+        for(var i=0 ; i<colunas; i++){
+            novaGrade[i] = [];
+            for(var j=0; j<linhas; j++){
+                var obj;
+                novaGrade[i].push(obj = {center:0, left:0, right:0, top:0, bottom:0, type:'A'});
+            }
+        }
+
+        return novaGrade;
+    }
+
+    criarMatrizB(colunas, linhas){
+
+        var novaGrade = [];
+
+        for(var i=0 ; i<colunas; i++){
+            novaGrade[i] = [];
+            for(var j=0; j<linhas; j++){
+                var obj;
+                novaGrade[i].push(obj = {valor:0, type:'A'});
             }
         }
 
@@ -66,12 +96,12 @@ class MacGrid{
         /*ctx.fillStyle = "yellow";
         ctx.fillText(Math.floor(this.phi[5][5]),5*this.dx+this.dx/2 - this.dx/4,5*this.dx+this.dx/2);
         */
-        /*for(var i=0; i<this.N; i++)
+        for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
             ctx.fillStyle = "yellow";
-            ctx.fillText(Math.floor(this.phi[i][j]),i*this.dx+this.dx/2 - this.dx/4,j*this.dx+this.dx/2);
-        }*/
+            ctx.fillText(Math.floor(this.celulas[i][j]),i*this.dx+this.dx/2 - this.dx/4,j*this.dx+this.dx/2);
+        }
     }
 
     desenhar(ctx){
@@ -327,22 +357,28 @@ class MacGrid{
 
     projection(){
 
-        var A = this.criarGrade(this.N, this.N, {center:0, left:0, right:0, top:0, bottom:0, type:'A'});
-        var b = this.criarGrade(this.N, this.N, {valor:0, type:'A'});
+        var A = this.criarMatrizA(this.N, this.N);
+        var b = this.criarMatrizB(this.N, this.N);
 
         for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
-
-            if(i==0 || i==this.N-1 || j==0 || j==this.N-1)
-            {
+            
+            if(i==0)
+            {   
                 A[i][j].type = 'S';
                 b[i][j].type = 'S';                
-            }else if(this.celulas[i][j]==1)
+            }else 
             {
+                if(this.celulas[i][j]==1)
                 A[i][j].type = 'F';
                 b[i][j].type = 'F';
             }
+            /*if(i == 0)
+            console.log("A[i][j].type+" +i+ "+j");
+            else if(this.celulas[i][j]==1)
+            console.log(i);*/
+            console.log(A[i][j].type+" "+i+" "+j);
         }
 
         A = this.buildMatrixA(A);
@@ -351,10 +387,26 @@ class MacGrid{
         for(var i=1; i<this.N-1; i++)
         for(var j=1; j<this.N-1; j++)
         {
-            this.p = ((A[i][j].left*this.p[i-1][j] + A[i][j].right*this.p[i+1][j] + A[i][j].top*this.p[i][j+1] + A[i][j].bottom*this.p[i][j-1]
-                     )/A[i][j].center) + b[i][j];
+            //console.log(A[i][j].center+" "+A[i][j].left+" "+A[i][j].right+" "+A[i][j].top+" "+A[i][j].bottom+" "+ b[i][j].valor);
+            this.p[i][j] = ((A[i][j].left*this.p[i-1][j] + A[i][j].right*this.p[i+1][j] + A[i][j].top*this.p[i][j+1] + A[i][j].bottom*this.p[i][j-1]
+                     )/A[i][j].center) + b[i][j].valor;
         }
 
+
+        for(var i=1; i<this.N; i++)
+        for(var j=1; j<this.N-1; j++)
+        {
+            //console.log(this.p[i][j]+" "+this.p[i-1][j]+" "+this.p[i][j-1]);
+            this.u[i][j] += -this.dt*Math.sqrt(((this.p[i][j] - this.p[i-1][j])/this.dx)*((this.p[i][j] - this.p[i-1][j])/this.dx) + 
+                            ((this.p[i][j] - this.p[i][j-1])/this.dx)*((this.p[i][j] - this.p[i][j-1])/this.dx));
+        }
+
+        for(var i=1; i<this.N; i++)
+        for(var j=1; j<this.N-1; j++)
+        {
+            this.v[i][j] += -this.dt*Math.sqrt(((this.p[i][j] - this.p[i-1][j])/this.dx)*((this.p[i][j] - this.p[i-1][j])/this.dx) + 
+                            ((this.p[i][j] - this.p[i][j-1])/this.dx)*((this.p[i][j] - this.p[i][j-1])/this.dx));
+        }
 
     }
 
@@ -399,10 +451,11 @@ class MacGrid{
         for(var i=0; i<this.N; i++)
         for(var j=0; j<this.N; j++)
         {
-            if(A[i][j].type == 'F')
+            //console.log(A[i][j].type);
+            if(A[i][j].type != 'S')
             {
                 temp = 4;
-                if(i<this.N)
+                if(i<this.N-1)
                 if(A[i+1][j].type == 'S')
                     temp--;
                 else if(A[i+1][j].type == 'F')
@@ -414,7 +467,7 @@ class MacGrid{
                 else if(A[i-1][j].type == 'F')
                     A[i][j].left = -1;
 
-                if(j<this.N)
+                if(j<this.N-1)
                 if(A[i][j+1].type == 'S')
                     temp--;
                 else if(A[i][j+1].type == 'F')
@@ -427,6 +480,7 @@ class MacGrid{
                     A[i][j].top = -1;
 
                 A[i][j].center = temp;
+                //console.log(A[i][j].center);
             }
         }
         return A;
@@ -470,7 +524,7 @@ class MacGrid{
         return 0/0;
     }
 
-    solucaoArtigo(a,b,c){
+    solucaoArtigo(b,c){
         var retorno = {x1:0, x2:0};
         var delta = b*b - c;
         

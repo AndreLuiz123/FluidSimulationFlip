@@ -4,7 +4,7 @@ class Particle{
         this.x = x;
         this.y = y;
 
-        this.u = 10;
+        this.u = 0;
         this.v = 0;
     }
 
