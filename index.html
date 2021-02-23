@@ -50,14 +50,15 @@
 
 
     document.addEventListener ('keypress', (event) => {
-        mac.transferParticleToGrid();
         mac.atualizaGradesAuxiliares();
+        mac.resetaGrades();
+        mac.transferParticleToGrid();
         mac.applyExternalForces();
         mac.markCellsFluid();
         mac.initializeLevelSet();
         mac.reinitializeLevelSet();
         mac.extrapolateVelocities();
-        mac.projection();
+        //mac.projection();
         mac.transferGridToParticle();
         mac.advection();
     });
